@@ -8,6 +8,10 @@ const axios = require('axios');
  */
 function extractVideoId(url) {
   try {
+    // Prepend "https://" if the URL doesn't start with a valid protocol.
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
     const urlObj = new URL(url);
     if (urlObj.pathname.includes('/shorts/')) {
       const parts = urlObj.pathname.split('/');
@@ -28,6 +32,7 @@ function extractVideoId(url) {
     return null;
   }
 }
+
 
 /**
  * Sleeps for a given number of milliseconds.

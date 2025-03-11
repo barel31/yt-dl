@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const AWS = require('aws-sdk');
 const crypto = require('crypto');
-const { processDownload, extractVideoId, createProgressBar, sleep } = require('./download');
+const { processDownload, extractVideoId } = require('./download');
 
 // --- Redis Setup ---
 // In development, disable Redis caching.
