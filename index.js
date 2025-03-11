@@ -5,7 +5,9 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const AWS = require('aws-sdk');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { Upload } = require('@aws-sdk/lib-storage');
+const { GetObjectCommand, S3 } = require('@aws-sdk/client-s3');
 const crypto = require('crypto');
 const { processDownload, extractVideoId } = require('./download');
 
@@ -33,9 +35,11 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // AWS S3 Setup.
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+const s3 = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
   region: process.env.AWS_REGION,
 });
 
@@ -313,11 +317,15 @@ bot.on('callback_query', async (callbackQuery) => {
         Body: fileStream,
         ContentType: format === 'mp4' ? 'video/mp4' : 'audio/mpeg'
       };
-      await s3.upload(s3Params).promise();
-      const s3Url = s3.getSignedUrl('getObject', {
+      await new Upload({
+        client: s3,
+        params: s3Params,
+      }).done();
+      const s3Url = await getSignedUrl(s3, new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
         Key: `${sanitizedTitle}${fileExtension}`,
-        Expires: 3600
+      }), {
+        expiresIn: 3600,
       });
       
       await updateStatus('מעלה את הקובץ ל-Telegram, אנא המתן...', true);
@@ -354,7 +362,7 @@ bot.on('callback_query', async (callbackQuery) => {
     activeDownloads[chatId] = false;
   }
 });
- 
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
