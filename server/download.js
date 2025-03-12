@@ -7,7 +7,7 @@ const crypto = require('crypto');
 let redisClient = null;
 const redisUrl = process.env.REDIS_URL;
 
-if (redisUrl && redisUrl.startsWith('redis://')) {
+if (redisUrl) {
   console.log('[Redis] Attempting to connect using URL:', redisUrl);
   redisClient = redis.createClient({ url: redisUrl });
   redisClient.on('error', (err) => {
@@ -33,6 +33,10 @@ if (redisUrl && redisUrl.startsWith('redis://')) {
  */
 function extractVideoId(url) {
   try {
+    // Prepend "https://" if the URL doesn't start with a valid protocol.
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
     const urlObj = new URL(url);
     if (urlObj.pathname.includes('/shorts/')) {
       const parts = urlObj.pathname.split('/');
