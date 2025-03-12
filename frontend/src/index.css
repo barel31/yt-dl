@@ -58,7 +58,15 @@ button:focus-visible {
   a:hover {
     color: #747bff;
   }
-  button {
-    background-color: #f9f9f9;
+  button,
+  input,
+  select,
+  option {
+    background-color: #cfc3c3;
+    color: #1a1a1a;
+  }
+
+  option {
+    background-color: #ffffff;
   }
 }
