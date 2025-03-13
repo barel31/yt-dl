@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const AWS = require('aws-sdk');
+const { S3 } = require('@aws-sdk/client-s3');
 const crypto = require('crypto');
 const { processDownload, extractVideoId } = require('./download');
 const cors = require('cors');
@@ -17,9 +17,11 @@ if (process.env.NODE_ENV === 'development') {
 } else app.use(cors({ origin: process.env.FRONTEND_URL }));
 
 // AWS S3 Setup.
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+const s3 = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
   region: process.env.AWS_REGION,
 });
 
@@ -30,6 +32,11 @@ const jobs = {};
 function generateJobId() {
   return crypto.randomBytes(8).toString('hex');
 }
+
+// GET /api/ping
+app.get('/api/ping', async (req, res) => {
+  res.json({ message: 'pong' });
+});
 
 // POST /api/download
 // Request payload: { url: string, format: 'mp3'|'mp4', quality?: number }
