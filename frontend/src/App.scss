@@ -3,7 +3,7 @@
   max-width: 650px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 form {
@@ -23,13 +23,32 @@ input[type='text'] {
 select {
   margin: 0 0.5rem;
   padding: 0.5rem;
+  border-radius: 10px;
 }
 
 button {
   padding: 0.5rem 1rem;
+  margin: 1rem;
   font-size: 1rem;
   cursor: pointer;
 }
+
+.server-status {
+  color: #ff9800;
+  font-weight: bold;
+  text-align: center;
+  margin: auto;
+  margin-bottom: 20px;
+  p {
+    display: inline;
+  }
+  span {
+    display: inline-block;
+  width: 13px;
+  text-align: right;
+  }
+}
+
 
 .status {
   margin-top: 1rem;
@@ -103,4 +122,8 @@ a[download]:hover {
   h1 {
     font-size: 2rem;
   }
+}
+
+:disabled {
+  cursor: not-allowed;
 }
